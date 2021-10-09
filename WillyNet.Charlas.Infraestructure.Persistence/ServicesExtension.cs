@@ -10,12 +10,14 @@ using System;
 using System.Text;
 using WillyNet.Charlas.Core.Application.Interfaces;
 using WillyNet.Charlas.Core.Application.Interfaces.Repository;
+using WillyNet.Charlas.Core.Application.Interfaces.Utilities;
 using WillyNet.Charlas.Core.Application.Wrappers;
 using WillyNet.Charlas.Core.Domain.Entities;
 using WillyNet.Charlas.Core.Domain.Settings;
 using WillyNet.Charlas.Infraestructure.Persistence.Contexts;
 using WillyNet.Charlas.Infraestructure.Persistence.Repository;
 using WillyNet.Charlas.Infraestructure.Persistence.Services;
+using WillyNet.Charlas.Infraestructure.Persistence.Services.Utilities;
 
 namespace WillyNet.Charlas.Infraestructure.Persistence
 {
@@ -96,6 +98,10 @@ namespace WillyNet.Charlas.Infraestructure.Persistence
             #region SERVICES
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<ITransactionDb, TransactionDb>();
+            #endregion
+
+            #region UTILITIES
+            services.AddTransient<IControlUtil, ControlUtil>();
             #endregion
 
         }

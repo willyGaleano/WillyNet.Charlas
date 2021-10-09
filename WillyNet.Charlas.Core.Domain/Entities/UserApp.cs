@@ -13,5 +13,6 @@ namespace WillyNet.Charlas.Core.Domain.Entities
         public string LastName { get; set; }
         public short Dni { get; set; }
         public ICollection<Asistencia> Asistencias { get; set; }
+        public ICollection<Control> Controls { get; set; }
     }
 }

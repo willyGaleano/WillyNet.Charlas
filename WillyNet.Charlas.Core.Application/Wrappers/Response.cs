@@ -16,6 +16,13 @@ namespace WillyNet.Charlas.Core.Application.Wrappers
             Data = data;
         }
 
+        public Response(T data, bool succeeded , string message = null)
+        {
+            Succeeded = succeeded;
+            Message = message;
+            Data = data;
+        }
+
         public Response(string message)
         {
             Succeeded = false;

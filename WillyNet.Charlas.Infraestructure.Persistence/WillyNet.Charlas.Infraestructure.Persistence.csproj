@@ -21,8 +21,4 @@
     <ProjectReference Include="..\WillyNet.Charlas.Core.Domain\WillyNet.Charlas.Core.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Seeds\" />
-  </ItemGroup>
-
 </Project>

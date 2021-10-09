@@ -35,9 +35,10 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
         public DbSet<Evento> Eventos { get; set; }
         public DbSet<CharlaEvento> CharlasEventos { get; set; }
         public DbSet<Estado> Estados { get; set; }
+        public DbSet<Control> Controls { get; set; }
 
-        
-         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<AuditableBaseEntity>())
             {
@@ -84,7 +85,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
                     .HasMaxLength(30);
                 entity.Property(p => p.Descripcion)
                     .IsRequired()
-                    .HasMaxLength(200);
+                    .HasMaxLength(500);
                 entity.Property(p => p.UrlImage)
                     .IsRequired()
                     .HasMaxLength(350);
@@ -120,6 +121,15 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
                 entity.Property(p => p.Nombre)
                    .IsRequired()
                    .HasMaxLength(30);
+            });
+
+            modelBuilder.Entity<Control>(entity =>
+            {
+                entity.HasKey(p => p.ControlId);
+                entity.ToTable("Control");
+                entity.HasOne(o => o.UserApp)
+                       .WithMany(m => m.Controls)
+                       .HasForeignKey(f => f.UserAppId);
             });
 
         }

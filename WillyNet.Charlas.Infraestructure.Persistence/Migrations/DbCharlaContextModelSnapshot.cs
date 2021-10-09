@@ -200,8 +200,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
                     b.Property<string>("Descripcion")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -255,6 +255,40 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.HasIndex("EventoId");
 
                     b.ToTable("CharlaEvento");
+                });
+
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Control", b =>
+                {
+                    b.Property<Guid>("ControlId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FecSesion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("Tope")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("UserAppId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ControlId");
+
+                    b.HasIndex("UserAppId");
+
+                    b.ToTable("Control");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Estado", b =>
@@ -486,6 +520,15 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Navigation("Evento");
                 });
 
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Control", b =>
+                {
+                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.UserApp", "UserApp")
+                        .WithMany("Controls")
+                        .HasForeignKey("UserAppId");
+
+                    b.Navigation("UserApp");
+                });
+
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Evento", b =>
                 {
                     b.HasOne("WillyNet.Charlas.Core.Domain.Entities.Estado", "Estado")
@@ -520,6 +563,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.UserApp", b =>
                 {
                     b.Navigation("Asistencias");
+
+                    b.Navigation("Controls");
                 });
 #pragma warning restore 612, 618
         }

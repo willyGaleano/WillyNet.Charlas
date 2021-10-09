@@ -21,7 +21,7 @@ namespace WillyNet.Charlas.Presentation.WebApi
 {
     public class Startup
     {
-        readonly string myPolicy = "policyApiSGP";
+        readonly string myPolicy = "policyApiCharla";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

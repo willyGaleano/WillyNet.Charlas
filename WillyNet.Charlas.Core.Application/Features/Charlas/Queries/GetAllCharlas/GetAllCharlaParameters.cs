@@ -9,6 +9,6 @@ namespace WillyNet.Charlas.Core.Application.Features.Charlas.Queries.GetAllCharl
 {
     public class GetAllCharlaParameters : RequestParameter
     {
-        public string Nombre { get; set; }
+        public string Nombre { get; set; }      
     }
 }
