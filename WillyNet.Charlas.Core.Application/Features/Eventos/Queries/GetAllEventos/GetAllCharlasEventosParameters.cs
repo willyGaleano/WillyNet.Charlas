@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.Parameters;
 
-namespace WillyNet.Charlas.Core.Application.Features.CharlasEventos.Queries.GetAllCharlasEventos
+namespace WillyNet.Charlas.Core.Application.Features.Eventos.Queries.GetAllEventos
 {
-    public class GetAllCharlasEventosParameters : RequestParameter
+    public class GetAllEventosParameters : RequestParameter
     {
         public string Nombre { get; set; }
     }

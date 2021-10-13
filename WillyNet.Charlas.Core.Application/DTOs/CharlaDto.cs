@@ -10,7 +10,8 @@ namespace WillyNet.Charlas.Core.Application.DTOs
     {
         public Guid CharlaId { get; set; }
         public string Nombre { get; set; }
-        public string Descripcion { get; set; }
-        public string UrlImage { get; set; }        
+        public string Descripcion { get; set; }        
+        public string UrlImage { get; set; }
+        public bool DeleteLog { get; set; }
     }
 }

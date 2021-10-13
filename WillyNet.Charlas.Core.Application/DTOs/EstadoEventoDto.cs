@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace WillyNet.Charlas.Core.Application.DTOs
 {
-    public class CharlaEventoDto
+    public class EstadoEventoDto
     {
-        public Guid CharlaEventoId { get; set; }
-        public CharlaDto Charla { get; set; }
-        public EventoDto Evento { get; set; }
-        
+        public Guid EstadoEventoId { get; set; }
+        public string Nombre { get; set; }
+        public string Color { get; set; }
     }
 }

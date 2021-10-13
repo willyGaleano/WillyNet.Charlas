@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace WillyNet.Charlas.Core.Application.DTOs
 {
-    public class EstadoDto
+    public class EstadoAsistenciaDto
     {
-        public Guid EstadoId { get; set; }
+        public Guid EstadoAsistenciaId { get; set; }
         public string Nombre { get; set; }
     }
 }

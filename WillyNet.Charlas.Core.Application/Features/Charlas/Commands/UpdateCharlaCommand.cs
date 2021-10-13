@@ -35,16 +35,13 @@ namespace WillyNet.Charlas.Core.Application.Features.Charlas.Commands
             {
                 var charla = await _repositoryCharla.GetByIdAsync(request.CharlaId, cancellationToken);
                 if (charla == null)
-                    throw new ApiException("No existe esa charla");
-
-                if(charla.CharlaId != request.CharlaId)
-                    throw new ApiException("No existe esa charla");
+                    throw new ApiException("No existe esa charla");                
 
                 charla.Nombre = request.NombreCharla;
                 charla.Descripcion = request.DescripcionCharla;
                 if (request.ImgFile != null)
                 {
-                    var result = await _fileStorageService.DeleteAsync(request.ImgFile, charla.CharlaId);
+                    var result = await _fileStorageService.DeleteAsync(charla.UrlImage, charla.CharlaId);
                     if (result)
                     {
                         var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, charla.CharlaId);

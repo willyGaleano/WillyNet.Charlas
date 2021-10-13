@@ -10,8 +10,8 @@ using WillyNet.Charlas.Infraestructure.Persistence.Contexts;
 namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 {
     [DbContext(typeof(DbCharlaContext))]
-    [Migration("20211008081714_Control")]
-    partial class Control
+    [Migration("20211012213359_Add column Color in EstadoEvento")]
+    partial class AddcolumnColorinEstadoEvento
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -158,17 +158,17 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Asistio")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("CharlaEventoId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EstadoAsistenciaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EventoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -181,7 +181,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
                     b.HasKey("AsistenciaId");
 
-                    b.HasIndex("CharlaEventoId");
+                    b.HasIndex("EstadoAsistenciaId");
+
+                    b.HasIndex("EventoId");
 
                     b.HasIndex("UserAppId");
 
@@ -200,6 +202,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("DeleteLog")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -213,50 +218,17 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("UrlImage")
                         .IsRequired()
-                        .HasMaxLength(350)
-                        .HasColumnType("nvarchar(350)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("CharlaId");
 
                     b.ToTable("Charla");
-                });
-
-            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.CharlaEvento", b =>
-                {
-                    b.Property<Guid>("CharlaEventoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CharlaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("EventoId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CharlaEventoId");
-
-                    b.HasIndex("CharlaId");
-
-                    b.HasIndex("EventoId");
-
-                    b.ToTable("CharlaEvento");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Control", b =>
@@ -293,9 +265,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.ToTable("Control");
                 });
 
-            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Estado", b =>
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.EstadoAsistencia", b =>
                 {
-                    b.Property<Guid>("EstadoId")
+                    b.Property<Guid>("EstadoAsistenciaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -313,12 +285,45 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
-                    b.HasKey("EstadoId");
+                    b.HasKey("EstadoAsistenciaId");
 
-                    b.ToTable("Estado");
+                    b.ToTable("EstadoAsistencia");
+                });
+
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.EstadoEvento", b =>
+                {
+                    b.Property<Guid>("EstadoEventoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("EstadoEventoId");
+
+                    b.ToTable("EstadoEvento");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Evento", b =>
@@ -330,6 +335,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Property<short>("Aforo")
                         .HasColumnType("smallint");
 
+                    b.Property<Guid>("CharlaId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -339,7 +347,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Property<short>("Duracion")
                         .HasColumnType("smallint");
 
-                    b.Property<Guid>("EstadoId")
+                    b.Property<Guid>("EstadoEventoId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("FechaFin")
@@ -356,7 +364,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
                     b.HasKey("EventoId");
 
-                    b.HasIndex("EstadoId");
+                    b.HasIndex("CharlaId");
+
+                    b.HasIndex("EstadoEventoId");
 
                     b.ToTable("Evento");
                 });
@@ -373,8 +383,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<short>("Dni")
-                        .HasColumnType("smallint");
+                    b.Property<int>("Dni")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -488,9 +498,15 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Asistencia", b =>
                 {
-                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.CharlaEvento", "CharlaEvento")
+                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.EstadoAsistencia", "EstadoAsistencia")
                         .WithMany("Asistencias")
-                        .HasForeignKey("CharlaEventoId")
+                        .HasForeignKey("EstadoAsistenciaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.Evento", "Evento")
+                        .WithMany("Asistencias")
+                        .HasForeignKey("EventoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -498,28 +514,11 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                         .WithMany("Asistencias")
                         .HasForeignKey("UserAppId");
 
-                    b.Navigation("CharlaEvento");
-
-                    b.Navigation("UserApp");
-                });
-
-            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.CharlaEvento", b =>
-                {
-                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.Charla", "Charla")
-                        .WithMany("CharlasEventos")
-                        .HasForeignKey("CharlaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.Evento", "Evento")
-                        .WithMany("CharlasEventos")
-                        .HasForeignKey("EventoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Charla");
+                    b.Navigation("EstadoAsistencia");
 
                     b.Navigation("Evento");
+
+                    b.Navigation("UserApp");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Control", b =>
@@ -533,33 +532,41 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Evento", b =>
                 {
-                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.Estado", "Estado")
+                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.Charla", "Charla")
                         .WithMany("Eventos")
-                        .HasForeignKey("EstadoId")
+                        .HasForeignKey("CharlaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Estado");
+                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.EstadoEvento", "EstadoEvento")
+                        .WithMany("Eventos")
+                        .HasForeignKey("EstadoEventoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Charla");
+
+                    b.Navigation("EstadoEvento");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Charla", b =>
                 {
-                    b.Navigation("CharlasEventos");
+                    b.Navigation("Eventos");
                 });
 
-            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.CharlaEvento", b =>
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.EstadoAsistencia", b =>
                 {
                     b.Navigation("Asistencias");
                 });
 
-            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Estado", b =>
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.EstadoEvento", b =>
                 {
                     b.Navigation("Eventos");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Evento", b =>
                 {
-                    b.Navigation("CharlasEventos");
+                    b.Navigation("Asistencias");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.UserApp", b =>

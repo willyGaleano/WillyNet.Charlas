@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.Interfaces;
@@ -32,10 +28,12 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
 
         public DbSet<Asistencia> Asistencias { get; set; }
         public DbSet<Charla> Charlas { get; set; }
-        public DbSet<Evento> Eventos { get; set; }
-        public DbSet<CharlaEvento> CharlasEventos { get; set; }
-        public DbSet<Estado> Estados { get; set; }
         public DbSet<Control> Controls { get; set; }
+        public DbSet<EstadoAsistencia> EstadosAsistencias { get; set; }
+        public DbSet<EstadoEvento> EstadosEventos { get; set; }
+        public DbSet<Evento> Eventos { get; set; }        
+        
+        
 
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -57,8 +55,6 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
 
             return base.SaveChangesAsync(cancellationToken);
         }
-         
-         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,10 +63,13 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
             modelBuilder.Entity<Asistencia>(entity =>
             {
                 entity.HasKey(p => p.AsistenciaId);
-                entity.ToTable("Asistencia");
-                entity.HasOne(o => o.CharlaEvento)
+                entity.ToTable("Asistencia");                
+                entity.HasOne(o => o.Evento)
                      .WithMany(m => m.Asistencias)
-                     .HasForeignKey(f => f.CharlaEventoId);
+                     .HasForeignKey(f => f.EventoId);
+                entity.HasOne(o => o.EstadoAsistencia)
+                     .WithMany(m => m.Asistencias)
+                     .HasForeignKey(f => f.EstadoAsistenciaId);
                 entity.HasOne(o => o.UserApp)
                      .WithMany(m => m.Asistencias)
                      .HasForeignKey(f => f.UserAppId);
@@ -82,45 +81,13 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
                 entity.ToTable("Charla");
                 entity.Property(p => p.Nombre)
                     .IsRequired()
-                    .HasMaxLength(30);
+                    .HasMaxLength(40);
                 entity.Property(p => p.Descripcion)
                     .IsRequired()
                     .HasMaxLength(500);
                 entity.Property(p => p.UrlImage)
                     .IsRequired()
-                    .HasMaxLength(350);
-            });
-
-            modelBuilder.Entity<Evento>(entity =>
-            {
-                entity.HasKey(p => p.EventoId);
-                entity.ToTable("Evento");
-                entity.HasOne(o => o.Estado)
-                     .WithMany(m => m.Eventos)
-                     .HasForeignKey(f => f.EstadoId);
-            });
-
-
-            modelBuilder.Entity<CharlaEvento>(entity =>
-            {
-                entity.HasKey(p => p.CharlaEventoId);
-                entity.ToTable("CharlaEvento");
-                entity.HasOne(o => o.Charla)
-                     .WithMany(m => m.CharlasEventos)
-                     .HasForeignKey(f => f.CharlaId);
-                entity.HasOne(o => o.Evento)
-                     .WithMany(m => m.CharlasEventos)
-                     .HasForeignKey(f => f.EventoId);
-            });
-
-
-            modelBuilder.Entity<Estado>(entity =>
-            {
-                entity.HasKey(p => p.EstadoId);
-                entity.ToTable("Estado");
-                entity.Property(p => p.Nombre)
-                   .IsRequired()
-                   .HasMaxLength(30);
+                    .HasMaxLength(450);
             });
 
             modelBuilder.Entity<Control>(entity =>
@@ -132,6 +99,38 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
                        .HasForeignKey(f => f.UserAppId);
             });
 
+            modelBuilder.Entity<EstadoAsistencia>(entity =>
+            {
+                entity.HasKey(p => p.EstadoAsistenciaId);
+                entity.ToTable("EstadoAsistencia");
+                entity.Property(p => p.Nombre)
+                   .IsRequired()
+                   .HasMaxLength(40);
+            });
+
+            modelBuilder.Entity<EstadoEvento>(entity =>
+            {
+                entity.HasKey(p => p.EstadoEventoId);
+                entity.ToTable("EstadoEvento");
+                entity.Property(p => p.Nombre)
+                   .IsRequired()
+                   .HasMaxLength(40);
+                entity.Property(p => p.Color)
+                   .IsRequired()
+                   .HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<Evento>(entity =>
+            {
+                entity.HasKey(p => p.EventoId);
+                entity.ToTable("Evento");
+                entity.HasOne(o => o.EstadoEvento)
+                     .WithMany(m => m.Eventos)
+                     .HasForeignKey(f => f.EstadoEventoId);
+                entity.HasOne(o => o.Charla)
+                     .WithMany(m => m.Eventos)
+                     .HasForeignKey(f => f.CharlaId);
+            });           
         }
 
     }

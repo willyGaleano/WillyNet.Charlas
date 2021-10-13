@@ -15,6 +15,8 @@ namespace WillyNet.Charlas.Core.Application.Features.Asistencias.Queries.GetAllA
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public string Nombre { get; set; }
+        public string AppUserId { get; set; }
     }
 
     public class GetAllAsistenciasQueryHandler : IRequestHandler<GetAllAsistenciasQuery, PagedResponse<IEnumerable<AsistenciaDto>>>
@@ -30,13 +32,19 @@ namespace WillyNet.Charlas.Core.Application.Features.Asistencias.Queries.GetAllA
         public async Task<PagedResponse<IEnumerable<AsistenciaDto>>> Handle(GetAllAsistenciasQuery request, CancellationToken cancellationToken)
         {
             var asistencias = await _repositoryAsistencia.ListAsync(
-                    new GetAllAsistenciasSpecification(request.PageNumber, request.PageSize),
+                    new GetAllAsistenciasSpecification(request.PageNumber, request.PageSize,
+                        request.Nombre, request.AppUserId
+                    ),
                     cancellationToken
                 );
 
             var asistenciasDto = _mapper.Map<IEnumerable<AsistenciaDto>>(asistencias);
             var total = await _repositoryAsistencia
-                    .CountAsync(new GetAllAsistenciasSpecification(request.PageNumber, request.PageSize));
+                        .CountAsync(new GetAllAsistenciasSpecification(request.PageNumber, request.PageSize,
+                        request.Nombre, request.AppUserId
+                    ),
+                    cancellationToken
+                );
 
             return new PagedResponse<IEnumerable<AsistenciaDto>>
                         (asistenciasDto, request.PageNumber, request.PageSize, total, "¡Consulta exitosa!");

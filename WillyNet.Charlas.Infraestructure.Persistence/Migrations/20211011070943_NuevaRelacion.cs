@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 {
-    public partial class InitBDTable : Migration
+    public partial class NuevaRelacion : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,7 +28,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Dni = table.Column<short>(type: "smallint", nullable: false),
+                    Dni = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -54,9 +54,10 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 columns: table => new
                 {
                     CharlaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    UrlImage = table.Column<string>(type: "nvarchar(350)", maxLength: 350, nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Descripcion = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    UrlImage = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
+                    DeleteLog = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -68,11 +69,11 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Estado",
+                name: "EstadoAsistencia",
                 columns: table => new
                 {
-                    EstadoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Nombre = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    EstadoAsistenciaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -80,7 +81,23 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Estado", x => x.EstadoId);
+                    table.PrimaryKey("PK_EstadoAsistencia", x => x.EstadoAsistenciaId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EstadoEvento",
+                columns: table => new
+                {
+                    EstadoEventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Nombre = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EstadoEvento", x => x.EstadoEventoId);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,6 +207,30 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Control",
+                columns: table => new
+                {
+                    ControlId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FecSesion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Tope = table.Column<short>(type: "smallint", nullable: false),
+                    UserAppId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Control", x => x.ControlId);
+                    table.ForeignKey(
+                        name: "FK_Control_AspNetUsers_UserAppId",
+                        column: x => x.UserAppId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Evento",
                 columns: table => new
                 {
@@ -197,7 +238,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     Aforo = table.Column<short>(type: "smallint", nullable: false),
                     FechaIni = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Duracion = table.Column<short>(type: "smallint", nullable: false),
-                    EstadoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CharlaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EstadoEventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -207,39 +250,16 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Evento", x => x.EventoId);
                     table.ForeignKey(
-                        name: "FK_Evento_Estado_EstadoId",
-                        column: x => x.EstadoId,
-                        principalTable: "Estado",
-                        principalColumn: "EstadoId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CharlaEvento",
-                columns: table => new
-                {
-                    CharlaEventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CharlaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CharlaEvento", x => x.CharlaEventoId);
-                    table.ForeignKey(
-                        name: "FK_CharlaEvento_Charla_CharlaId",
+                        name: "FK_Evento_Charla_CharlaId",
                         column: x => x.CharlaId,
                         principalTable: "Charla",
                         principalColumn: "CharlaId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CharlaEvento_Evento_EventoId",
-                        column: x => x.EventoId,
-                        principalTable: "Evento",
-                        principalColumn: "EventoId",
+                        name: "FK_Evento_EstadoEvento_EstadoEventoId",
+                        column: x => x.EstadoEventoId,
+                        principalTable: "EstadoEvento",
+                        principalColumn: "EstadoEventoId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -248,8 +268,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 columns: table => new
                 {
                     AsistenciaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Asistio = table.Column<bool>(type: "bit", nullable: false),
-                    CharlaEventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EstadoAsistenciaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserAppId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -266,17 +286,28 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Asistencia_CharlaEvento_CharlaEventoId",
-                        column: x => x.CharlaEventoId,
-                        principalTable: "CharlaEvento",
-                        principalColumn: "CharlaEventoId",
+                        name: "FK_Asistencia_EstadoAsistencia_EstadoAsistenciaId",
+                        column: x => x.EstadoAsistenciaId,
+                        principalTable: "EstadoAsistencia",
+                        principalColumn: "EstadoAsistenciaId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Asistencia_Evento_EventoId",
+                        column: x => x.EventoId,
+                        principalTable: "Evento",
+                        principalColumn: "EventoId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Asistencia_CharlaEventoId",
+                name: "IX_Asistencia_EstadoAsistenciaId",
                 table: "Asistencia",
-                column: "CharlaEventoId");
+                column: "EstadoAsistenciaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Asistencia_EventoId",
+                table: "Asistencia",
+                column: "EventoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Asistencia_UserAppId",
@@ -323,19 +354,19 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CharlaEvento_CharlaId",
-                table: "CharlaEvento",
+                name: "IX_Control_UserAppId",
+                table: "Control",
+                column: "UserAppId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Evento_CharlaId",
+                table: "Evento",
                 column: "CharlaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CharlaEvento_EventoId",
-                table: "CharlaEvento",
-                column: "EventoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Evento_EstadoId",
+                name: "IX_Evento_EstadoEventoId",
                 table: "Evento",
-                column: "EstadoId");
+                column: "EstadoEventoId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -359,7 +390,13 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CharlaEvento");
+                name: "Control");
+
+            migrationBuilder.DropTable(
+                name: "EstadoAsistencia");
+
+            migrationBuilder.DropTable(
+                name: "Evento");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -371,10 +408,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 name: "Charla");
 
             migrationBuilder.DropTable(
-                name: "Evento");
-
-            migrationBuilder.DropTable(
-                name: "Estado");
+                name: "EstadoEvento");
         }
     }
 }

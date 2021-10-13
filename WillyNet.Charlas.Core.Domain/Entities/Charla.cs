@@ -13,7 +13,8 @@ namespace WillyNet.Charlas.Core.Domain.Entities
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public string UrlImage { get; set; }
-        public ICollection<CharlaEvento> CharlasEventos { get; set; }
+        public bool DeleteLog { get; set; }
+        public ICollection<Evento> Eventos { get; set; }
 
     }
 }

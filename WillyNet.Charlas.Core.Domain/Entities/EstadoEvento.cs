@@ -7,10 +7,11 @@ using WillyNet.Charlas.Core.Domain.Common;
 
 namespace WillyNet.Charlas.Core.Domain.Entities
 {
-    public class Estado : AuditableBaseEntity
+    public class EstadoEvento : AuditableBaseEntity
     {
-        public Guid EstadoId { get; set; }
+        public Guid EstadoEventoId { get; set; }
         public string Nombre { get; set; }
+        public string Color { get; set; }
         public ICollection<Evento> Eventos { get; set; }
     }
 }

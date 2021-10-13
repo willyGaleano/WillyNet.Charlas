@@ -7,13 +7,10 @@ using WillyNet.Charlas.Core.Domain.Common;
 
 namespace WillyNet.Charlas.Core.Domain.Entities
 {
-    public class CharlaEvento : AuditableBaseEntity
+    public class EstadoAsistencia : AuditableBaseEntity
     {
-        public Guid CharlaEventoId { get; set; }
-        public Guid CharlaId { get; set; }
-        public Guid EventoId { get; set; }
-        public Charla Charla { get; set; }
-        public Evento Evento { get; set; }
+        public Guid EstadoAsistenciaId { get; set; }
+        public string Nombre { get; set; }
         public ICollection<Asistencia> Asistencias { get; set; }
     }
 }

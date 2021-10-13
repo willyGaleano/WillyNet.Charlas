@@ -60,11 +60,12 @@ namespace WillyNet.Charlas.Infraestructure.Shared.Services.AzureServices
             return blobClient.Uri.ToString();
         }
 
-        public async Task<bool> DeleteAsync(FileRequest file, Guid id)
+        public async Task<bool> DeleteAsync(string nameFile, Guid id)
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient("imagescharlascontainer");
-
-            var blobClient = containerClient.GetBlobClient(file.GetPathWithFileName(id));
+            var indexIni = nameFile.IndexOf("imagescharlascontainer") + "imagescharlascontainer".Length;
+            var nameBlob = nameFile.Substring(indexIni).Trim();
+            var blobClient = containerClient.GetBlobClient(nameBlob);
             return await blobClient.DeleteIfExistsAsync();
         }
 

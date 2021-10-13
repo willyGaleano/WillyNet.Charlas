@@ -9,5 +9,7 @@ namespace WillyNet.Charlas.Core.Application.Features.Asistencias.Queries.GetAllA
 {
     public class GetAllAsistenciasParameters : RequestParameter
     {
+        public string Nombre { get; set; }
+        public string AppUserId { get; set; }
     }
 }

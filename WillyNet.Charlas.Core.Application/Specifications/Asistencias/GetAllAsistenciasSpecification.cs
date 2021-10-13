@@ -10,20 +10,24 @@ namespace WillyNet.Charlas.Core.Application.Specifications.Asistencias
 {
     public class GetAllAsistenciasSpecification : Specification<Asistencia>
     {
-        public GetAllAsistenciasSpecification(int pageNumber, int pageSize)
+        public GetAllAsistenciasSpecification(int pageNumber, int pageSize, string nombre, string userAppId)
         {
             Query.Skip((pageNumber - 1) * pageSize)
-                 .Take(pageSize);                            
+                 .Take(pageSize);
+            if (!string.IsNullOrEmpty(nombre))
+                Query.Search(x => x.Evento.Charla.Nombre, "%" +nombre + "%");
 
+            if (!string.IsNullOrEmpty(userAppId))
+                Query.Where(x => x.UserAppId == userAppId);
             Query
+                .Include(x => x.EstadoAsistencia)
                 .Include(x => x.UserApp)
-                .Include(x => x.CharlaEvento)
+                .Include(x => x.Evento)
                 .ThenInclude(x => x.Charla);
 
             Query
-                .Include(x => x.CharlaEvento)
-                .ThenInclude(x => x.Evento)
-                .ThenInclude(x => x.Estado);
+                .Include(x => x.Evento)
+                .ThenInclude(x => x.EstadoEvento);                
         }
     }
 }

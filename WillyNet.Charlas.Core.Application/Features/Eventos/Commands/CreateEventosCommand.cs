@@ -4,13 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.Interfaces;
 using WillyNet.Charlas.Core.Application.Interfaces.Repository;
-using WillyNet.Charlas.Core.Application.Specifications.Estados;
+using WillyNet.Charlas.Core.Application.Specifications.EstadosEventos;
 using WillyNet.Charlas.Core.Application.Wrappers;
 using WillyNet.Charlas.Core.Domain.Entities;
 
-namespace WillyNet.Charlas.Core.Application.Features.CharlasEventos.Commands
+namespace WillyNet.Charlas.Core.Application.Features.Eventos.Commands
 {
-    public class CreateCharlasEventosCommand : IRequest<Response<Guid>>
+    public class CreateEventosCommand : IRequest<Response<Guid>>
     {        
         public short Aforo { get; set; }
         public DateTime FechaIni { get; set; }
@@ -21,27 +21,25 @@ namespace WillyNet.Charlas.Core.Application.Features.CharlasEventos.Commands
         public string UrlImageCharla { get; set; }
     }
 
-    public class CreateCharlasEventosCommandHandler : IRequestHandler<CreateCharlasEventosCommand, Response<Guid>>
-    {
-        private readonly IRepositoryAsync<CharlaEvento> _repositoryCE;
+    public class CreateEventosCommandHandler : IRequestHandler<CreateEventosCommand, Response<Guid>>
+    {        
         private readonly IRepositoryAsync<Charla> _repositoryCharla;
         private readonly IRepositoryAsync<Evento> _repositoryEvento;
-        private readonly IRepositoryAsync<Estado> _repositoryEstado;
+        private readonly IRepositoryAsync<EstadoEvento> _repositoryEstadoEvento;
         private readonly ITransactionDb _transactionDb;
 
-        public CreateCharlasEventosCommandHandler(IRepositoryAsync<CharlaEvento> repositoryCE,
+        public CreateEventosCommandHandler(
                 IRepositoryAsync<Charla> repositoryCharla, IRepositoryAsync<Evento> repositoryEvento,
-                IRepositoryAsync<Estado> repositoryEstado, ITransactionDb transactionDb
+                IRepositoryAsync<EstadoEvento> repositoryEstadoEvento, ITransactionDb transactionDb
             )
-        {
-            _repositoryCE = repositoryCE;
+        {            
             _repositoryCharla = repositoryCharla;
             _repositoryEvento = repositoryEvento;
-            _repositoryEstado = repositoryEstado;
+            _repositoryEstadoEvento = repositoryEstadoEvento;
             _transactionDb = transactionDb;
         }
 
-        public async Task<Response<Guid>> Handle(CreateCharlasEventosCommand request, CancellationToken cancellationToken)
+        public async Task<Response<Guid>> Handle(CreateEventosCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -55,17 +53,18 @@ namespace WillyNet.Charlas.Core.Application.Features.CharlasEventos.Commands
                         CharlaId = charlaId,
                         Nombre = request.NombreCharla,
                         Descripcion = request.DescripcionCharla,
-                        UrlImage = request.UrlImageCharla
+                        UrlImage = request.UrlImageCharla,
+                        DeleteLog = false
                     };
 
                     await _repositoryCharla.AddAsync(newChrala, cancellationToken);
                 }
                 else
-                {
-                    charlaId = (Guid)request.CharlaId;
-                }
+                   charlaId = (Guid)request.CharlaId;
+                
 
-                var estado = await _repositoryEstado.GetBySpecAsync(new GetByNameSpecification("Disponible"), cancellationToken);
+                var estado = await _repositoryEstadoEvento
+                        .GetBySpecAsync(new GetByNameSpecification("Disponible"), cancellationToken);
                 var newEvento = new Evento
                 {
                     EventoId = Guid.NewGuid(),
@@ -73,22 +72,14 @@ namespace WillyNet.Charlas.Core.Application.Features.CharlasEventos.Commands
                     Duracion = request.Duracion,
                     FechaFin = request.FechaIni.AddHours(request.Duracion),
                     Aforo = request.Aforo,
-                    EstadoId = estado.EstadoId
+                    EstadoEventoId = estado.EstadoEventoId,
+                    CharlaId = charlaId
                 };
                 await _repositoryEvento.AddAsync(newEvento, cancellationToken);
 
-                var newCharlaEvento = new CharlaEvento
-                {
-                    CharlaEventoId = Guid.NewGuid(),
-                    CharlaId = charlaId,
-                    EventoId = newEvento.EventoId
-                };
-
-                await _repositoryCE.AddAsync(newCharlaEvento, cancellationToken);
-
                 _transactionDb.DbContextTransaction.Commit();
 
-                return new Response<Guid>(newCharlaEvento.CharlaEventoId, "Se creó correctamente.");
+                return new Response<Guid>(newEvento.EventoId, "Se creó correctamente el evento.");
             }
             catch(Exception ex)
             {

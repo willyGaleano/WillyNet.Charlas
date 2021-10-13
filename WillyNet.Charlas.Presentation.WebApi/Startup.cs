@@ -14,6 +14,7 @@ using WillyNet.Charlas.Core.Application;
 using WillyNet.Charlas.Core.Application.Interfaces;
 using WillyNet.Charlas.Infraestructure.Persistence;
 using WillyNet.Charlas.Infraestructure.Shared;
+using WillyNet.Charlas.Infraestructure.Shared.Services.SignalRServices;
 using WillyNet.Charlas.Presentation.WebApi.Extensions;
 using WillyNet.Charlas.Presentation.WebApi.Services;
 
@@ -45,6 +46,7 @@ namespace WillyNet.Charlas.Presentation.WebApi
                                               .AllowCredentials()
                             ));
             services.AddControllers();
+            services.AddSignalR();
             
         }
 
@@ -60,8 +62,14 @@ namespace WillyNet.Charlas.Presentation.WebApi
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapHub<BroadcastHub>("/notify");
             });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();               
+            });
+           
         }
     }
 }

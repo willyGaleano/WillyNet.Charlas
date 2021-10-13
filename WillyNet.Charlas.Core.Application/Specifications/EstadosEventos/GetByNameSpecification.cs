@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Domain.Entities;
 
-namespace WillyNet.Charlas.Core.Application.Specifications.Estados
+namespace WillyNet.Charlas.Core.Application.Specifications.EstadosEventos
 {
-    public class GetByNameSpecification : Specification<Estado>, ISingleResultSpecification
+    public class GetByNameSpecification : Specification<EstadoEvento>, ISingleResultSpecification
     {
         public GetByNameSpecification(string nombre)
         {

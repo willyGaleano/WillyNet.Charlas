@@ -12,7 +12,7 @@ namespace WillyNet.Charlas.Core.Application.Interfaces
     {
         Task<UrlsDto> UploadAsync(ICollection<FileRequest> files, Guid id);
         Task<string> UploadSingleAsync(FileRequest file, Guid id);
-        Task<bool> DeleteAsync(FileRequest file, Guid id);
+        Task<bool> DeleteAsync(string nameFile, Guid id);
         Task<bool> DeleteBlobAsync(string nameBlob);
     }
 }

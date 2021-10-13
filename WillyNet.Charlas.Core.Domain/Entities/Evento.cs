@@ -21,8 +21,10 @@ namespace WillyNet.Charlas.Core.Domain.Entities
             }
             set { _fechaFin = value; }
         }
-        public Guid EstadoId { get; set; }
-        public Estado Estado { get; set; }
-        public ICollection<CharlaEvento> CharlasEventos { get; set; }
+        public Guid CharlaId { get; set; }
+        public Charla Charla { get; set; }
+        public Guid EstadoEventoId { get; set; }
+        public EstadoEvento EstadoEvento { get; set; }
+        public ICollection<Asistencia> Asistencias { get; set; }
     }
 }

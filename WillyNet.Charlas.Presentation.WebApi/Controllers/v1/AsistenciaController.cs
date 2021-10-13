@@ -17,7 +17,9 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
                        new GetAllAsistenciasQuery
                        {
                            PageNumber = filters.PageNumber,
-                           PageSize = filters.PageSize
+                           PageSize = filters.PageSize,
+                           Nombre = filters.Nombre,
+                           AppUserId = filters.AppUserId
                        }
                 ));
         }
@@ -36,8 +38,8 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
             return Ok(await Mediator.Send(command));
         }
 
-        [HttpDelete("RechazarCharlaAsync/{id}")]
-        public async Task<IActionResult> RechazarCharlaAsync(Guid id) 
+        [HttpDelete("RechazarEventoAsync/{id}")]
+        public async Task<IActionResult> RechazarEventoAsync(Guid id) 
         {
             return Ok(await Mediator.Send(new DeleteAsistenciaCommand { AsistenciaId = id}));
         }
