@@ -10,5 +10,6 @@ namespace WillyNet.Charlas.Core.Application.Features.Eventos.Queries.GetAllEvent
     public class GetAllEventosParameters : RequestParameter
     {
         public string Nombre { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

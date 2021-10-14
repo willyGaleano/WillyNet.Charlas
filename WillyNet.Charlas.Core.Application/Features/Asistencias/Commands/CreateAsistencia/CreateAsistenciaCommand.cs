@@ -54,7 +54,16 @@ namespace WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.Create
                 var limiteCharlas = await _controlUtil.CreateOrUpdateCantControl(request.UserAppId, request.FecSesion);
                 if (!limiteCharlas)
                     return new Response<Guid>("Superó sus límites de charlas por día");
-                    
+
+                if(asistencia.Evento.FechaFin <= request.FecSesion)
+                    return new Response<Guid>("La charla finalizó");
+
+                var countCantAsistEvento = await _repositoryAsistencia.CountAsync(
+                        new CountCantEventAsistSpecification(request.EventoId), cancellationToken
+                    );
+                if (countCantAsistEvento >= asistencia.Evento.Aforo)
+                    return new Response<Guid>("Asistencias agotadas en esta charla");
+
                 var id = Guid.NewGuid();
                 var estado = await _repositoryEstadoAsistencia
                         .GetBySpecAsync(new GetByNameSpecification("Pendiente"), cancellationToken);

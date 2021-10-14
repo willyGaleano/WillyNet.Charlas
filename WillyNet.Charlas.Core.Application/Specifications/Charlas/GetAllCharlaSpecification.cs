@@ -15,8 +15,8 @@ namespace WillyNet.Charlas.Core.Application.Specifications.Charlas
             Query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
-            Query.Search(x => x.Nombre, "%" + nombre + "%");
-                
+            Query.Where(x => x.DeleteLog == false);
+            Query.Search(x => x.Nombre, "%" + nombre + "%");                
         }
     }
 }

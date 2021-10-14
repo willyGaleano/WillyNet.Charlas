@@ -90,5 +90,13 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
         {
             return Ok(await Mediator.Send(new DeleteCharlaCommand { CharlaId = id}));
         }
+
+        [HttpPatch("DeshabilitarCharlaAsync/{id}")]
+        public async Task<IActionResult> DeshabilitarCharlaAsync(Guid id)
+        {
+            var result = await Mediator.Send(new DeshabilitarCharlaCommand {CharlaId = id });
+            await _hubContext.Clients.All.BroadcastMessage();
+            return Ok(result);
+        }
     }
 }

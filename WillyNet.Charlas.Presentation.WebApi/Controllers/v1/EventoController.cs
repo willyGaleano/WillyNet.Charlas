@@ -18,6 +18,7 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
         {
             return Ok( await Mediator.Send(new GetAllEventosQuery { 
                 Nombre = parameters.Nombre,
+                IsAdmin = parameters.IsAdmin,
                 PageNumber = parameters.PageNumber,
                 PageSize = parameters.PageSize
             }));

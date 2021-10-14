@@ -18,6 +18,7 @@ namespace WillyNet.Charlas.Core.Application.Features.Eventos.Queries.GetAllEvent
         public string Nombre { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public bool IsAdmin { get; set; }
     }
 
     public class GetAllEventosQueryHandler
@@ -40,38 +41,42 @@ namespace WillyNet.Charlas.Core.Application.Features.Eventos.Queries.GetAllEvent
         public async Task<PagedResponse<IEnumerable<EventoDto>>> Handle(GetAllEventosQuery request, CancellationToken cancellationToken)
         {
             var charEvent = await _repositoryEvento.ListAsync(
-                    new GetAllPagedEventosSpecification(request.PageNumber, request.PageSize, request.Nombre),
+                    new GetAllPagedEventosSpecification(request.PageNumber, request.PageSize, request.Nombre, request.IsAdmin),
                 cancellationToken) ;
-
-            DateTime fNow = DateTime.Now;
-            EstadoEvento estadoEv = null;
-
-            foreach(var item in charEvent)
+            if (!request.IsAdmin)
             {
-                if(item.FechaIni <= fNow && fNow <= item.FechaFin)
+                DateTime fNow = DateTime.Now;
+                EstadoEvento estadoEv = null;
+
+                foreach (var item in charEvent)
                 {
-                    estadoEv = await _repositoryEstadoEvento.GetBySpecAsync(
-                        new GetByNameSpecification("En curso"), cancellationToken
-                        );
-                   
-                    item.EstadoEvento = estadoEv;
+                    if (item.FechaIni <= fNow && fNow <= item.FechaFin)
+                    {
+                        estadoEv = await _repositoryEstadoEvento.GetBySpecAsync(
+                            new GetByNameSpecification("En curso"), cancellationToken
+                            );
+
+                        item.EstadoEvento = estadoEv;
+                        item.EstadoEventoId = estadoEv.EstadoEventoId;
+                    }
+                    if (item.FechaFin < fNow)
+                    {
+                        estadoEv = await _repositoryEstadoEvento.GetBySpecAsync(
+                            new GetByNameSpecification("Finalizado"), cancellationToken
+                            );
+
+                        item.EstadoEvento = estadoEv;
+                        item.EstadoEventoId = estadoEv.EstadoEventoId;
+                    }
+                    if (estadoEv != null)
+                        await _repositoryEvento.UpdateAsync(item, cancellationToken);
+                    estadoEv = null;
                 }
-                if(item.FechaFin < fNow)
-                {
-                    estadoEv = await _repositoryEstadoEvento.GetBySpecAsync(
-                        new GetByNameSpecification("Finalizado"), cancellationToken
-                        );
-                    
-                    item.EstadoEvento = estadoEv;
-                }
-                if(estadoEv != null)
-                    await _repositoryEvento.UpdateAsync(item, cancellationToken);
-                estadoEv = null;
             }
 
             var charEventDto = _mapper.Map<IEnumerable<EventoDto>>(charEvent);
             var total = await _repositoryEvento.CountAsync(
-                new GetAllPagedEventosSpecification(request.PageNumber, request.PageSize, request.Nombre),
+                new GetAllPagedEventosSpecification(request.PageNumber, request.PageSize, request.Nombre, request.IsAdmin),
                 cancellationToken
                 );
 
