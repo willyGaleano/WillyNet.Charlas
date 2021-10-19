@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using WillyNet.Charlas.Infraestructure.Shared.Services.SignalRServices;
 
 namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
 {
+    [Authorize]
     public class CharlaController : BaseApiController
     {
         private readonly IHubContext<BroadcastHub, IHubClient> _hubContext;

@@ -10,8 +10,8 @@ using WillyNet.Charlas.Infraestructure.Persistence.Contexts;
 namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 {
     [DbContext(typeof(DbCharlaContext))]
-    [Migration("20211011070943_NuevaRelacion")]
-    partial class NuevaRelacion
+    [Migration("20211018030537_Nueva relacion User RefreshToken")]
+    partial class NuevarelacionUserRefreshToken
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -299,6 +299,11 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
@@ -339,6 +344,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("DeleteLog")
+                        .HasColumnType("bit");
+
                     b.Property<short>("Duracion")
                         .HasColumnType("smallint");
 
@@ -364,6 +372,55 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.HasIndex("EstadoEventoId");
 
                     b.ToTable("Evento");
+                });
+
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("RefreshTokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedToken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReplacedByToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedByIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserAppId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("RefreshTokenId");
+
+                    b.HasIndex("UserAppId");
+
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.UserApp", b =>
@@ -544,6 +601,15 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Navigation("EstadoEvento");
                 });
 
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("WillyNet.Charlas.Core.Domain.Entities.UserApp", "UserApp")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserAppId");
+
+                    b.Navigation("UserApp");
+                });
+
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Charla", b =>
                 {
                     b.Navigation("Eventos");
@@ -569,6 +635,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Navigation("Asistencias");
 
                     b.Navigation("Controls");
+
+                    b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
         }

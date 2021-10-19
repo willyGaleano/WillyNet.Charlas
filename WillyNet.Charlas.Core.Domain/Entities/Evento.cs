@@ -14,6 +14,7 @@ namespace WillyNet.Charlas.Core.Domain.Entities
         public short Aforo { get; set; }
         public DateTime FechaIni { get; set; }
         public short Duracion { get; set; }
+        public bool DeleteLog { get; set; }
         public DateTime FechaFin {
             get { 
                 _fechaFin = FechaIni.AddHours(Duracion);

@@ -59,6 +59,7 @@ namespace WillyNet.Charlas.Presentation.WebApi
             app.UseCors(myPolicy);
             app.UseAuthentication();
             app.UseAuthorization();
+            //app.UseCookiePolicy();
 
             app.UseEndpoints(endpoints =>
             {

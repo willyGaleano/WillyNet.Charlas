@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 {
-    public partial class NuevaRelacion : Migration
+    public partial class nuevarelacion : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -90,6 +90,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 {
                     EstadoEventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Nombre = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -231,6 +232,32 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshToken",
+                columns: table => new
+                {
+                    UserAppId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Expires = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedRe = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Revoked = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RevokedByIp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReplacedByToken = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshToken", x => new { x.UserAppId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_AspNetUsers_UserAppId",
+                        column: x => x.UserAppId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Evento",
                 columns: table => new
                 {
@@ -238,6 +265,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     Aforo = table.Column<short>(type: "smallint", nullable: false),
                     FechaIni = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Duracion = table.Column<short>(type: "smallint", nullable: false),
+                    DeleteLog = table.Column<bool>(type: "bit", nullable: false),
                     FechaFin = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CharlaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EstadoEventoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -391,6 +419,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Control");
+
+            migrationBuilder.DropTable(
+                name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "EstadoAsistencia");

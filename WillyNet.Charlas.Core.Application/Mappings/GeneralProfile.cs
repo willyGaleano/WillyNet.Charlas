@@ -61,11 +61,14 @@ namespace WillyNet.Charlas.Core.Application.Mappings
                 .ForMember(x => x.FechaIni, y => y.MapFrom(z => z.FechaIni))
                 .ForMember(x => x.Duracion, y => y.MapFrom(z => z.Duracion))
                 .ForMember(x => x.FechaFin, y => y.MapFrom(z => z.FechaFin))
+                .ForMember(x => x.DeleteLogEvento, y => y.MapFrom(z => z.DeleteLog))
+
                 .ForMember(x => x.CharlaId, y => y.MapFrom(z => z.CharlaId))
                 .ForMember(x => x.NombreCharla, y => y.MapFrom(z => z.Charla.Nombre))
                 .ForMember(x => x.Descripcion, y => y.MapFrom(z => z.Charla.Descripcion))
                 .ForMember(x => x.UrlImage, y => y.MapFrom(z => z.Charla.UrlImage))
-                .ForMember(x => x.DeleteLog, y => y.MapFrom(z => z.Charla.DeleteLog))
+                .ForMember(x => x.DeleteLogCharla, y => y.MapFrom(z => z.Charla.DeleteLog))
+
                 .ForMember(x => x.EstadoEventoId, y => y.MapFrom(z => z.EstadoEvento.EstadoEventoId))
                 .ForMember(x => x.NombreEstadoEvento, y => y.MapFrom(z => z.EstadoEvento.Nombre))
                 .ForMember(x => x.ColorEstadoEvento, y => y.MapFrom(z => z.EstadoEvento.Color));

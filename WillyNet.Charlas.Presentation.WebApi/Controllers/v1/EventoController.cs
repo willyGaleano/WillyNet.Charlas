@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.Features.Eventos.Commands;
 using WillyNet.Charlas.Core.Application.Features.Eventos.Queries.GetAllEventos;
 
 namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
 {
+    [Authorize]
     public class EventoController : BaseApiController
     {
         [HttpPost("CrearEventoAsync")]
@@ -22,6 +25,19 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
                 PageNumber = parameters.PageNumber,
                 PageSize = parameters.PageSize
             }));
+        }
+
+        [HttpPut("UpdateEventoAsync/{id}")]
+        public async Task<IActionResult> UpdateEventoAsync(Guid id, [FromBody] UpdateEventosCommand command)
+        {
+            command.EventoId = id;
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPatch("DeleteLogEventoAsync/{id}")]
+        public async Task<IActionResult> DeleteLogEventoAsync(Guid id)
+        {            
+            return Ok(await Mediator.Send(new DeshabilitarEventosCommand {EventoId = id }));
         }
     }
 }

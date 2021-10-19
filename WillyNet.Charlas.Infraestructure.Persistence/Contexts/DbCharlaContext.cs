@@ -31,9 +31,10 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
         public DbSet<Control> Controls { get; set; }
         public DbSet<EstadoAsistencia> EstadosAsistencias { get; set; }
         public DbSet<EstadoEvento> EstadosEventos { get; set; }
-        public DbSet<Evento> Eventos { get; set; }        
-        
-        
+        public DbSet<Evento> Eventos { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+
 
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -130,7 +131,16 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Contexts
                 entity.HasOne(o => o.Charla)
                      .WithMany(m => m.Eventos)
                      .HasForeignKey(f => f.CharlaId);
-            });           
+            });
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasKey(p => p.RefreshTokenId);
+                entity.ToTable("RefreshToken");
+                entity.HasOne(o => o.UserApp)
+                    .WithMany(m => m.RefreshTokens)
+                    .HasForeignKey(f => f.UserAppId);
+            });
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -14,65 +15,94 @@ using WillyNet.Charlas.Core.Application.Enums;
 using WillyNet.Charlas.Core.Application.Exceptions;
 using WillyNet.Charlas.Core.Application.Helpers;
 using WillyNet.Charlas.Core.Application.Interfaces;
+using WillyNet.Charlas.Core.Application.Interfaces.Repository;
+using WillyNet.Charlas.Core.Application.Specifications.RefreshTokens;
 using WillyNet.Charlas.Core.Application.Wrappers;
 using WillyNet.Charlas.Core.Domain.Entities;
 using WillyNet.Charlas.Core.Domain.Settings;
+using WillyNet.Charlas.Infraestructure.Persistence.Contexts;
 
 namespace WillyNet.Charlas.Infraestructure.Persistence.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly UserManager<UserApp> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<UserApp> _userManager;     
         private readonly SignInManager<UserApp> _signInManager;
         private readonly JWTSettings _jwtSettings;
-        private readonly IDateTimeService _dateTimeService;
-        public AccountService(UserManager<UserApp> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IOptions<JWTSettings> jwtSettings,
-            IDateTimeService dateTimeService,
-            SignInManager<UserApp> signInManager
+        private readonly IRepositoryAsync<RefreshToken> _repositoryRefreshToken;
+        private readonly DbCharlaContext _dbCharlaContext;
+        
+        public AccountService(UserManager<UserApp> userManager,            
+            IOptions<JWTSettings> jwtSettings,            
+            SignInManager<UserApp> signInManager,
+            IRepositoryAsync<RefreshToken> repositoryRefreshToken,
+            DbCharlaContext dbCharlaContext
             )
         {
             _userManager = userManager;
-            _roleManager = roleManager;
-            _jwtSettings = jwtSettings.Value;
-            _dateTimeService = dateTimeService;
+            _jwtSettings = jwtSettings.Value;            
             _signInManager = signInManager;
+            _repositoryRefreshToken = repositoryRefreshToken;
+            _dbCharlaContext = dbCharlaContext;
 
         }
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request, string ipAddress)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null)
+            try
             {
-                throw new ApiException($"No Accounts Registered with {request.Email}.");
-            }
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, request.Password, false, lockoutOnFailure: false);
-            if (!result.Succeeded)
-            {
-                throw new ApiException($"Invalid Credentials for '{request.Email}'.");
-            }
-            if (!user.EmailConfirmed)
-            {
-                throw new ApiException($"Account Not Confirmed for '{request.Email}'.");
-            }
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                {
+                    throw new ApiException($"No Accounts Registered with {request.Email}.");
+                }
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, request.Password, false, lockoutOnFailure: false);
+                if (!result.Succeeded)
+                {
+                    throw new ApiException($"Invalid Credentials for '{request.Email}'.");
+                }
+                if (!user.EmailConfirmed)
+                {
+                    throw new ApiException($"Account Not Confirmed for '{request.Email}'.");
+                }
 
-            JwtSecurityToken jwtSecurityToken = await GenerateJWToken(user);
-            AuthenticationResponse response = new()
+                JwtSecurityToken jwtSecurityToken = await GenerateJWToken(user);
+                AuthenticationResponse response = new()
+                {
+                    Id = user.Id,
+                    JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                    Email = user.Email,
+                    UserName = user.UserName
+                };
+                var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                response.Roles = rolesList.ToList();
+                response.IsVerified = user.EmailConfirmed;
+
+                var refrtoq = await _repositoryRefreshToken.ListAsync(new GetAllRefreshTokensSpecification(user.Id));
+
+                if (refrtoq.Count > 0 && refrtoq.Any(a => a.IsActive))
+                {
+                    var activeRefreshToken = refrtoq.Where(a => a.IsActive == true).FirstOrDefault();
+                    response.RefreshToken = activeRefreshToken.Token;
+                    response.RefreshTokenExpiration = activeRefreshToken.Expires;
+                }
+                else
+                {
+                    var refreshToken = GenerateRefreshToken(ipAddress);
+                    response.RefreshToken = refreshToken.Token;
+                    response.RefreshTokenExpiration = refreshToken.Expires;
+
+                    refreshToken.UserAppId = user.Id;
+                    refreshToken.RefreshTokenId = Guid.NewGuid();
+                    await _repositoryRefreshToken.AddAsync(refreshToken);
+                }
+               
+                return new Response<AuthenticationResponse>(response, $"Authenticated {user.UserName}");
+            }
+            catch(Exception ex)
             {
-                Id = user.Id,
-                JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                Email = user.Email,
-                UserName = user.UserName
-            };
-            var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
-            response.Roles = rolesList.ToList();
-            response.IsVerified = user.EmailConfirmed;
-            var refreshToken = GenerateRefreshToken(ipAddress);
-            response.RefreshToken = refreshToken.Token;
-            return new Response<AuthenticationResponse>(response, $"Authenticated {user.UserName}");
+                throw new Exception(ex.Message, ex);
+            }
         }
 
         public async Task<Response<string>> RegisterAsync(RegisterRequest request, string origin)
@@ -84,9 +114,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
             }
             var user = new UserApp
             {
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
+                Email = request.Email,    
                 UserName = request.UserName
             };
 
@@ -104,7 +132,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
                 }
                 else
                 {
-                    throw new ApiException($"{result.Errors}");
+                    throw new ApiException($"{result.Errors.ToArray()[0].Description}");
                 }
             }
             else
@@ -164,9 +192,59 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
             {
                 Token = RandomTokenString(),
                 Expires = DateTime.UtcNow.AddDays(7),
-                Created = DateTime.UtcNow,
+                CreatedToken = DateTime.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
+
+        public async Task<Response<AuthenticationResponse>> RefreshTokenAsync(string jwtToken, string ipAddress)
+        {
+            var user = await _dbCharlaContext.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(r => r.Token == jwtToken));
+            if(user == null)            
+                return new Response<AuthenticationResponse>("El token no coincide con ningun usuario");
+
+            var refreshToken = await _repositoryRefreshToken.GetBySpecAsync(new GetByTokenRefreshSpecification(jwtToken));
+            if (!refreshToken.IsActive)            
+                return new Response<AuthenticationResponse>("El token no está activo");
+
+            refreshToken.Revoked = DateTime.Now;
+            await _repositoryRefreshToken.UpdateAsync(refreshToken);
+
+            var newRefreshToken = GenerateRefreshToken(ipAddress);
+            newRefreshToken.UserAppId = user.Id;
+            newRefreshToken.RefreshTokenId = Guid.NewGuid();
+            await _repositoryRefreshToken.AddAsync(newRefreshToken);
+
+            //Generando un nuevo jwt
+            JwtSecurityToken jwtSecurityToken = await GenerateJWToken(user);
+            AuthenticationResponse response = new()
+            {
+                Id = user.Id,
+                JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Email = user.Email,
+                UserName = user.UserName
+            };
+            var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+            response.Roles = rolesList.ToList();
+            response.IsVerified = user.EmailConfirmed;            
+            response.RefreshToken = newRefreshToken.Token;
+            response.RefreshTokenExpiration = newRefreshToken.Expires;
+            return new Response<AuthenticationResponse>(response, $"RefreshToken {user.UserName}");
+        }
+
+        public async Task<Response<bool>> RevokeToken(string token)
+        {
+            var user = _dbCharlaContext.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+            if (user == null) return new Response<bool>(false);
+
+            var refreshToken = await _repositoryRefreshToken.GetBySpecAsync(new GetByTokenRefreshSpecification(token));
+            if (!refreshToken.IsActive) return new Response<bool>(false);
+
+            refreshToken.Revoked = DateTime.Now;
+            await _repositoryRefreshToken.UpdateAsync(refreshToken);
+            return new Response<bool>(true);
+        }
+
+       
     }
 }

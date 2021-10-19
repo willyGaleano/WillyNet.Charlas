@@ -13,8 +13,6 @@ namespace WillyNet.Charlas.Core.Application.Features.Auth.Commands.Register
 {
     public class RegisterCommand : IRequest<Response<string>>
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
@@ -39,8 +37,6 @@ namespace WillyNet.Charlas.Core.Application.Features.Auth.Commands.Register
                 Password = request.Password,
                 ConfirmPassword = request.ConfirmPassword,
                 UserName = request.UserName,
-                FirstName = request.FirstName,
-                LastName = request.LastName
             }, request.Origin);
         }
     }

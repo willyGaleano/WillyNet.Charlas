@@ -13,12 +13,13 @@ namespace WillyNet.Charlas.Core.Application.DTOs
         public DateTime FechaIni { get; set; }
         public short Duracion { get; set; }
         public DateTime FechaFin { get; set; }
+        public bool DeleteLogEvento { get; set; }
 
         public Guid CharlaId { get; set; }
         public string NombreCharla { get; set; }
         public string Descripcion { get; set; }
         public string UrlImage { get; set; }
-        public bool DeleteLog { get; set; }
+        public bool DeleteLogCharla { get; set; }
 
         public Guid EstadoEventoId { get; set; }
         public string NombreEstadoEvento { get; set; }

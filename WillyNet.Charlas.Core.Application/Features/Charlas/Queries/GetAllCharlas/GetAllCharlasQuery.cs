@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.DTOs;
 using WillyNet.Charlas.Core.Application.Interfaces.Repository;
+using WillyNet.Charlas.Core.Application.Specifications.Charlas;
 using WillyNet.Charlas.Core.Application.Wrappers;
 using WillyNet.Charlas.Core.Domain.Entities;
 
@@ -31,7 +32,8 @@ namespace WillyNet.Charlas.Core.Application.Features.Charlas.Queries.GetAllCharl
         {
             try
             {
-                var charlaList = await _repositoryCharla.ListAsync(cancellationToken);
+                var charlaList = await _repositoryCharla.ListAsync(
+                    new GetAllCharlasActivaSpecification(), cancellationToken);
                 var charlaDtoList = _mapper.Map<IEnumerable<CharlaDto>>(charlaList);
                 return new Response<IEnumerable<CharlaDto>>(charlaDtoList,"¡Consulta exitosa!");
             }

@@ -9,11 +9,6 @@ namespace WillyNet.Charlas.Core.Application.DTOs.User
 {
     public class RegisterRequest
     {
-        [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
 
         [Required]
         [EmailAddress]

@@ -1,0 +1,18 @@
+﻿using Ardalis.Specification;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WillyNet.Charlas.Core.Domain.Entities;
+
+namespace WillyNet.Charlas.Core.Application.Specifications.RefreshTokens
+{
+    public class GetAllRefreshTokensSpecification : Specification<RefreshToken>
+    {
+        public GetAllRefreshTokensSpecification(string userAppId)
+        {
+            Query.Where(x => x.UserAppId == userAppId);
+        }
+    }
+}

@@ -26,17 +26,19 @@ namespace WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.Create
     {
         private readonly IRepositoryAsync<Asistencia> _repositoryAsistencia;
         private readonly IRepositoryAsync<EstadoAsistencia> _repositoryEstadoAsistencia;
+        private readonly IRepositoryAsync<Evento> _repositoryEvento;
         private readonly IControlUtil _controlUtil;
         private readonly ITransactionDb _transactionDb;
 
         public CreateAsistenciaCommandHandler(IRepositoryAsync<Asistencia> repositoryAsistencia,
-            IRepositoryAsync<EstadoAsistencia> repositoryEstadoAsistencia,
+            IRepositoryAsync<EstadoAsistencia> repositoryEstadoAsistencia, IRepositoryAsync<Evento> repositoryEvento,
             IControlUtil controlUtil, ITransactionDb transactionDb)
         {
             _repositoryAsistencia = repositoryAsistencia;
             _repositoryEstadoAsistencia = repositoryEstadoAsistencia;
             _controlUtil = controlUtil;
             _transactionDb = transactionDb;
+            _repositoryEvento = repositoryEvento;
         }
 
         public async Task<Response<Guid>> Handle(CreateAsistenciaCommand request, CancellationToken cancellationToken)
@@ -55,13 +57,14 @@ namespace WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.Create
                 if (!limiteCharlas)
                     return new Response<Guid>("Superó sus límites de charlas por día");
 
-                if(asistencia.Evento.FechaFin <= request.FecSesion)
+                var evento = await _repositoryEvento.GetByIdAsync(request.EventoId, cancellationToken);
+                if(evento.FechaFin <= request.FecSesion)
                     return new Response<Guid>("La charla finalizó");
 
                 var countCantAsistEvento = await _repositoryAsistencia.CountAsync(
                         new CountCantEventAsistSpecification(request.EventoId), cancellationToken
                     );
-                if (countCantAsistEvento >= asistencia.Evento.Aforo)
+                if (countCantAsistEvento >= evento.Aforo)
                     return new Response<Guid>("Asistencias agotadas en esta charla");
 
                 var id = Guid.NewGuid();

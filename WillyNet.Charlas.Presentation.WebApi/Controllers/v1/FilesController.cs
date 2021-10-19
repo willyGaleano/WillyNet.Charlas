@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using WillyNet.Charlas.Core.Application.Parameters;
 
 namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
 {
+    [Authorize]
     public class FilesController : BaseApiController
     {
         [HttpPost("images")]

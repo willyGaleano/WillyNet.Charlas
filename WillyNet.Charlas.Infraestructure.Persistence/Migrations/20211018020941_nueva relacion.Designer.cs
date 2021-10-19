@@ -10,8 +10,8 @@ using WillyNet.Charlas.Infraestructure.Persistence.Contexts;
 namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 {
     [DbContext(typeof(DbCharlaContext))]
-    [Migration("20211012213359_Add column Color in EstadoEvento")]
-    partial class AddcolumnColorinEstadoEvento
+    [Migration("20211018020941_nueva relacion")]
+    partial class nuevarelacion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -344,6 +344,9 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("DeleteLog")
+                        .HasColumnType("bit");
+
                     b.Property<short>("Duracion")
                         .HasColumnType("smallint");
 
@@ -547,6 +550,50 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Navigation("Charla");
 
                     b.Navigation("EstadoEvento");
+                });
+
+            modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.UserApp", b =>
+                {
+                    b.OwnsMany("WillyNet.Charlas.Core.Domain.Entities.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<string>("UserAppId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("CreatedByIp")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime>("CreatedRe")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("Expires")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("ReplacedByToken")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime?>("Revoked")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("RevokedByIp")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Token")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("UserAppId", "Id");
+
+                            b1.ToTable("RefreshToken");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserAppId");
+                        });
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("WillyNet.Charlas.Core.Domain.Entities.Charla", b =>

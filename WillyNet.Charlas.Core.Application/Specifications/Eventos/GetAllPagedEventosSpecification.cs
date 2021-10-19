@@ -16,6 +16,7 @@ namespace WillyNet.Charlas.Core.Application.Specifications.Eventos
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize);
             Query.Search(x => x.Charla.Nombre, "%" + nombre + "%");
+            Query.Where(x => x.DeleteLog == false);
             if(!isAdmin)
                 Query.Where(x => x.EstadoEvento.Nombre.ToUpper() != "FINALIZADO");
             Query

@@ -15,7 +15,8 @@ namespace WillyNet.Charlas.Core.Application.DTOs.User
         public List<string> Roles { get; set; }
         public bool IsVerified { get; set; }
         public string JWToken { get; set; }
-        //[JsonIgnore]
+        [JsonIgnore]
         public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiration { get; set; }
     }
 }

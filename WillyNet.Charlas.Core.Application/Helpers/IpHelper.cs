@@ -16,6 +16,6 @@ namespace WillyNet.Charlas.Core.Application.Helpers
                 }
             }
             return string.Empty;
-        }
+        }       
     }
 }

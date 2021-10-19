@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.DTOs.User;
 using WillyNet.Charlas.Core.Application.Features.Auth.Commands;
@@ -15,12 +14,29 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers
         [HttpPost("Authenticate")]
         public async Task<IActionResult> AuthenticateAsync(AuthenticationRequest request)
         {
-            return Ok(await Mediator.Send(new AuthenticateCommand
+            var result = await Mediator.Send(new AuthenticateCommand
             {
                 Email = request.Email,
                 Password = request.Password,
                 IpAddress = GenerateIPAddress()
-            }));
+            });
+            setTokenCookie(result.Data.RefreshToken);
+            return Ok(result);
+        }
+
+        
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            //Request.Cookies.TryGetValue("X-refreshToken", out var refreshToken);
+            var refreshToken = Request.Cookies["X-refreshToken"];
+            var result = await Mediator.Send(new RefreshTokenCommand { 
+                RefreshToken = refreshToken,
+                IpAddress = GenerateIPAddress()
+            });
+            if (!string.IsNullOrEmpty(result.Data?.RefreshToken))
+                setTokenCookie(result.Data.RefreshToken);
+            return Ok(result);
         }
 
         [HttpPost("Register")]
@@ -28,8 +44,6 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers
         {
             return Ok(await Mediator.Send(new RegisterCommand
             {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
                 Email = request.Email,
                 Password = request.Password,
                 ConfirmPassword = request.ConfirmPassword,
@@ -44,6 +58,17 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers
                 return Request.Headers["X-Forwarded-For"];
             else
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+        }
+
+        private void setTokenCookie(string token)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7),
+                //SameSite = SameSiteMode.None
+            };
+            Response.Cookies.Append("X-refreshToken", token, cookieOptions);
         }
     }
 }

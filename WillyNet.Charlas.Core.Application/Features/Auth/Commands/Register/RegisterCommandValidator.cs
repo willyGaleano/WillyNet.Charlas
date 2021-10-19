@@ -10,16 +10,7 @@ namespace WillyNet.Charlas.Core.Application.Features.Auth.Commands.Register
     public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
     {
         public RegisterCommandValidator()
-        {
-            RuleFor(p => p.FirstName)
-               .NotEmpty().WithMessage("{PropertyName} no puede ser vacio.")
-               .MaximumLength(80).WithMessage("{PropertyName} no debe exceder de {MaxLength} caracteres");
-
-            RuleFor(p => p.LastName)
-               .NotEmpty().WithMessage("{PropertyName} no puede ser vacio.")
-               .MaximumLength(80).WithMessage("{PropertyName} no debe exceder de {MaxLength} caracteres");
-
-
+        {           
             RuleFor(p => p.Email)
                .NotEmpty().WithMessage("{PropertyName} no puede ser vacio.")
                .EmailAddress().WithMessage("{PropertyName} debe ser una direccion de email valida")

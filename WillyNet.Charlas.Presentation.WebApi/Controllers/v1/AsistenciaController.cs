@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.CreateAsistencia;
@@ -8,6 +9,7 @@ using WillyNet.Charlas.Core.Application.Features.Asistencias.Queries.GetAllAsist
 
 namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
 {
+    [Authorize]
     public class AsistenciaController : BaseApiController
     {
         [HttpGet("GetAllAsync")]
