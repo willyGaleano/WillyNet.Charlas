@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WillyNet.Charlas.Core.Application.Parameters;
 
-namespace WillyNet.Charlas.Core.Application.DTOs.User
+namespace WillyNet.Charlas.Core.Application.Features.Users.Queries.GetAllUsers
 {
-    public class UserAppDto
+    public class GetAllUsersParameters : RequestParameter
     {
-        public string Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public short Dni { get; set; }
-        public bool DeleteLog { get; set; }
-        public string Email { get; set; }
-        public string ImgUrl { get; set; }
     }
 }

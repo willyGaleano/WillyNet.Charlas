@@ -44,7 +44,7 @@ namespace WillyNet.Charlas.Core.Application.Features.Charlas.Commands
                     var result = await _fileStorageService.DeleteAsync(charla.UrlImage, charla.CharlaId);
                     if (result)
                     {
-                        var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, charla.CharlaId);
+                        var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, charla.CharlaId, "charlas");
                         charla.UrlImage = urlImg;
                     }
                 }

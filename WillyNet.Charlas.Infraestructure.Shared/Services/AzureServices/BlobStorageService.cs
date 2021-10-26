@@ -35,7 +35,7 @@ namespace WillyNet.Charlas.Infraestructure.Shared.Services.AzureServices
 
             foreach (var file in files)
             {
-                var blobClient = containerClient.GetBlobClient(file.GetPathWithFileName(id));
+                var blobClient = containerClient.GetBlobClient(file.GetPathWithFileName(id, "charla"));
 
                 await blobClient.UploadAsync(file.Content, new BlobHttpHeaders { ContentType = file.ContentType });
 
@@ -45,7 +45,7 @@ namespace WillyNet.Charlas.Infraestructure.Shared.Services.AzureServices
             return new UrlsDto(urls);
         }
 
-        public async Task<string> UploadSingleAsync(FileRequest file, Guid id)
+        public async Task<string> UploadSingleAsync(FileRequest file, Guid id, string carpeta)
         {
             if (file == null)
             {
@@ -53,8 +53,7 @@ namespace WillyNet.Charlas.Infraestructure.Shared.Services.AzureServices
             }
 
             var containerClient = _blobServiceClient.GetBlobContainerClient("imagescharlascontainer");
-            var blobClient = containerClient.GetBlobClient(file.GetPathWithFileName(id));
-            var name = blobClient.Name;
+            var blobClient = containerClient.GetBlobClient(file.GetPathWithFileName(id, carpeta));
             await blobClient.UploadAsync(file.Content, new BlobHttpHeaders { ContentType = file.ContentType });                      
 
             return blobClient.Uri.ToString();

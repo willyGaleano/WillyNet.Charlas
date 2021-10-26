@@ -12,6 +12,7 @@ namespace WillyNet.Charlas.Core.Domain.Entities
         public Guid EstadoEventoId { get; set; }
         public string Nombre { get; set; }
         public string Color { get; set; }
+        public bool DeleteLog { get; set; }
         public ICollection<Evento> Eventos { get; set; }
     }
 }

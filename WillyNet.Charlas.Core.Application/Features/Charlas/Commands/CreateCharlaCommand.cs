@@ -34,7 +34,7 @@ namespace WillyNet.Charlas.Core.Application.Features.Charlas.Commands
         public async Task<Response<Guid>> Handle(CreateCharlaCommand request, CancellationToken cancellationToken)
         {
             var id = Guid.NewGuid();
-            var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, id);            
+            var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, id, "charlas");            
 
             var newCharla = new Charla
             {

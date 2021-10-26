@@ -77,7 +77,10 @@ namespace WillyNet.Charlas.Core.Application.Mappings
                 .ForMember(x => x.Id, y => y.MapFrom(z => z.Id))
                 .ForMember(x => x.FirstName, y => y.MapFrom(z => z.FirstName))
                 .ForMember(x => x.LastName, y => y.MapFrom(z => z.LastName))
-                .ForMember(x => x.Dni, y => y.MapFrom(z => z.Dni));
+                .ForMember(x => x.Dni, y => y.MapFrom(z => z.Dni))
+                .ForMember(x => x.DeleteLog, y => y.MapFrom(z => z.DeleteLog))
+                .ForMember(x => x.Email, y => y.MapFrom(z => z.Email))
+                .ForMember(x => x.ImgUrl, y => y.MapFrom(z => z.ImgUrl));
 
 
             #endregion

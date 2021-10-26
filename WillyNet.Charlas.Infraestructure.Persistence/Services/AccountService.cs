@@ -49,8 +49,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
 
         public async Task<Response<AuthenticationResponse>> AuthenticateAsync(AuthenticationRequest request, string ipAddress)
         {
-            try
-            {
+           
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
@@ -98,11 +97,7 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
                 }
                
                 return new Response<AuthenticationResponse>(response, $"Authenticated {user.UserName}");
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
-            }
+           
         }
 
         public async Task<Response<string>> RegisterAsync(RegisterRequest request, string origin)

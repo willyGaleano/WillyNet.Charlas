@@ -11,7 +11,7 @@ namespace WillyNet.Charlas.Core.Application.Interfaces
     public interface IFileStorageService
     {
         Task<UrlsDto> UploadAsync(ICollection<FileRequest> files, Guid id);
-        Task<string> UploadSingleAsync(FileRequest file, Guid id);
+        Task<string> UploadSingleAsync(FileRequest file, Guid id, string carpeta);
         Task<bool> DeleteAsync(string nameFile, Guid id);
         Task<bool> DeleteBlobAsync(string nameBlob);
     }

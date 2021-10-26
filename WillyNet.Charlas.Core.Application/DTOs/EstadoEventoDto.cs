@@ -11,5 +11,6 @@ namespace WillyNet.Charlas.Core.Application.DTOs
         public Guid EstadoEventoId { get; set; }
         public string Nombre { get; set; }
         public string Color { get; set; }
+        public bool DeleteLog { get; set; }
     }
 }

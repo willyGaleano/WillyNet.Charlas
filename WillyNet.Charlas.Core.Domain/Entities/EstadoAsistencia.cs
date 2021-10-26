@@ -11,6 +11,7 @@ namespace WillyNet.Charlas.Core.Domain.Entities
     {
         public Guid EstadoAsistenciaId { get; set; }
         public string Nombre { get; set; }
+        public bool DeleteLog { get; set; }
         public ICollection<Asistencia> Asistencias { get; set; }
     }
 }

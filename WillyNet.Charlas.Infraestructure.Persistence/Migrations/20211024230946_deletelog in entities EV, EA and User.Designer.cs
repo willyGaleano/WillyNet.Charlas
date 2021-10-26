@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WillyNet.Charlas.Infraestructure.Persistence.Contexts;
 
 namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
 {
     [DbContext(typeof(DbCharlaContext))]
-    partial class DbCharlaContextModelSnapshot : ModelSnapshot
+    [Migration("20211024230946_deletelog in entities EV, EA and User")]
+    partial class deleteloginentitiesEVEAandUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,9 +277,6 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("DeleteLog")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -453,9 +452,6 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImgUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")

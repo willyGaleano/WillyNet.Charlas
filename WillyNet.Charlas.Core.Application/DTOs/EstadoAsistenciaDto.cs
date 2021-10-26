@@ -10,5 +10,6 @@ namespace WillyNet.Charlas.Core.Application.DTOs
     {
         public Guid EstadoAsistenciaId { get; set; }
         public string Nombre { get; set; }
+        public bool DeleteLog { get; set; }
     }
 }
