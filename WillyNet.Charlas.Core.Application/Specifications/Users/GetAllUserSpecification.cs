@@ -21,8 +21,8 @@ namespace WillyNet.Charlas.Core.Application.Specifications.Users
 
             if (!string.IsNullOrEmpty(lastName))
                 Query.Search(x => x.LastName, "%" +lastName + "%");
-
-            Query.Where(x => x.Dni == dni);
+            if(dni != 0)
+                Query.Where(x => x.Dni == dni);
 
             Query.Where(x => x.DeleteLog == false);
         }

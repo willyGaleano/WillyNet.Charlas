@@ -17,7 +17,7 @@ namespace WillyNet.Charlas.Core.Application.Features.Users.Commands.CreateUsers
     {        
         public string FirstName { get; set; }
         public string LastName { get; set; }        
-        public short Dni { get; set; }
+        public int Dni { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
@@ -43,23 +43,22 @@ namespace WillyNet.Charlas.Core.Application.Features.Users.Commands.CreateUsers
             {
                 throw new ApiException($"Username '{request.UserName}' ya existe.");
             }
-
-            var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, Guid.NewGuid(), "users");
-            var user = new UserApp
-            {
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Dni = request.Dni,
-                UserName = request.UserName,
-                Email = request.Email,
-                ImgUrl = urlImg,
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true
-            };
-
             var userWithSameEmail = await _userManager.FindByEmailAsync(request.Email);
             if (userWithSameEmail == null)
             {
+                var urlImg = await _fileStorageService.UploadSingleAsync(request.ImgFile, Guid.NewGuid(), "users");
+                var user = new UserApp
+                {
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Dni = request.Dni,
+                    UserName = request.UserName,
+                    Email = request.Email,
+                    ImgUrl = urlImg,
+                    EmailConfirmed = true,
+                    PhoneNumberConfirmed = true
+                };
+
                 var result = await _userManager.CreateAsync(user, request.Password);
                 if (result.Succeeded)
                 {

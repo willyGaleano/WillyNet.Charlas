@@ -11,7 +11,7 @@ namespace WillyNet.Charlas.Core.Application.Parameters
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public short Dni { get; set; }
+        public int Dni { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }

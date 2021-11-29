@@ -2,8 +2,6 @@
 using Azure.Storage.Blobs.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WillyNet.Charlas.Core.Application.DTOs.AzureBlobStorage;
 using WillyNet.Charlas.Core.Application.Interfaces;
@@ -59,7 +57,7 @@ namespace WillyNet.Charlas.Infraestructure.Shared.Services.AzureServices
             return blobClient.Uri.ToString();
         }
 
-        public async Task<bool> DeleteAsync(string nameFile, Guid id)
+        public async Task<bool> DeleteAsync(string nameFile)
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient("imagescharlascontainer");
             var indexIni = nameFile.IndexOf("imagescharlascontainer") + "imagescharlascontainer".Length;

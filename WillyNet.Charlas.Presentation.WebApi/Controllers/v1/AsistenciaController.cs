@@ -6,6 +6,7 @@ using WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.CreateAsis
 using WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.DeleteAsistencia;
 using WillyNet.Charlas.Core.Application.Features.Asistencias.Commands.MarcarAsistencia;
 using WillyNet.Charlas.Core.Application.Features.Asistencias.Queries.GetAllAsistencias;
+using WillyNet.Charlas.Core.Application.Features.Asistencias.Queries.GetCantAsistenciaEstado;
 
 namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
 {
@@ -22,6 +23,17 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
                            PageSize = filters.PageSize,
                            Nombre = filters.Nombre,
                            AppUserId = filters.AppUserId
+                       }
+                ));
+        }
+
+        [HttpGet("GetAllCantEstadoAsync")]
+        public async Task<IActionResult> GetAllCantEstadoAsync([FromQuery] string userAppId)
+        {
+            return Ok(await Mediator.Send(
+                       new GetCantAsistenciaEstadoQuery
+                       {                           
+                           UserAppId = userAppId
                        }
                 ));
         }

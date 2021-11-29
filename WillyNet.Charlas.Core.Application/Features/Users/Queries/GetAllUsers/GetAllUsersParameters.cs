@@ -11,6 +11,6 @@ namespace WillyNet.Charlas.Core.Application.Features.Users.Queries.GetAllUsers
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public short Dni { get; set; }
+        public int Dni { get; set; }
     }
 }

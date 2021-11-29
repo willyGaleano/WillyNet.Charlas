@@ -51,12 +51,12 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
                 Email = request.Email,
                 Password = request.Password,
                 ConfirmPassword = request.ConfirmPassword,
-                ImgFile = new FileRequest
+                ImgFile = request.File != null ? new FileRequest
                 {
                     Content = request.File.OpenReadStream(),
                     Name = request.File.FileName,
                     ContentType = request.File.ContentType
-                }
+                } : null
 
             };
 
@@ -65,9 +65,28 @@ namespace WillyNet.Charlas.Presentation.WebApi.Controllers.v1
         }
 
         [HttpPut("UpdateAsync/{id}")]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserCommand command, string id)
+        public async Task<IActionResult> UpdateAsync([FromForm] UserRequest request, string id)
         {
-            command.Id = id;
+
+            var command = new UpdateUserCommand
+            {
+                Id = id,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Dni = request.Dni,
+                UserName = request.UserName,
+                Email = request.Email,
+                Password = request.Password,
+                ConfirmPassword = request.ConfirmPassword,
+                ImgFile = request.File != null ? new FileRequest
+                {
+                    Content = request.File.OpenReadStream(),
+                    Name = request.File.FileName,
+                    ContentType = request.File.ContentType
+                } : null
+
+            };
+
             var result = await Mediator.Send(command);
             return Ok(result);
         }

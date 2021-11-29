@@ -71,7 +71,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
                     Id = user.Id,
                     JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                     Email = user.Email,
-                    UserName = user.UserName
+                    UserName = user.UserName,
+                    Avatar = user.ImgUrl
                 };
                 var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                 response.Roles = rolesList.ToList();
@@ -192,13 +193,13 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
             };
         }
 
-        public async Task<Response<AuthenticationResponse>> RefreshTokenAsync(string jwtToken, string ipAddress)
+        public async Task<Response<AuthenticationResponse>> RefreshTokenAsync(string refToken, string ipAddress)
         {
-            var user = await _dbCharlaContext.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(r => r.Token == jwtToken));
+            var user = await _dbCharlaContext.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(r => r.Token == refToken));
             if(user == null)            
                 return new Response<AuthenticationResponse>("El token no coincide con ningun usuario");
 
-            var refreshToken = await _repositoryRefreshToken.GetBySpecAsync(new GetByTokenRefreshSpecification(jwtToken));
+            var refreshToken = await _repositoryRefreshToken.GetBySpecAsync(new GetByTokenRefreshSpecification(refToken));
             if (!refreshToken.IsActive)            
                 return new Response<AuthenticationResponse>("El token no está activo");
 
@@ -217,7 +218,8 @@ namespace WillyNet.Charlas.Infraestructure.Persistence.Services
                 Id = user.Id,
                 JWToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Email = user.Email,
-                UserName = user.UserName
+                UserName = user.UserName,
+                Avatar = user.ImgUrl
             };
             var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
             response.Roles = rolesList.ToList();

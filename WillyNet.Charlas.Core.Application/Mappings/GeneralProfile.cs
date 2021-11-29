@@ -19,8 +19,7 @@ namespace WillyNet.Charlas.Core.Application.Mappings
             CreateMap<GetAllPagedCharlasQuery, GetAllCharlaParameters>();
             #endregion
 
-            #region DTOS                        
-            
+            #region DTOS           
             CreateMap<Asistencia, AsistenciaDto>()
                 .ForMember(x => x.AsistenciaId, y => y.MapFrom(z => z.AsistenciaId))
                 .ForMember(x => x.EstadoAsistenciaId, y => y.MapFrom(z => z.EstadoAsistenciaId))
@@ -78,11 +77,9 @@ namespace WillyNet.Charlas.Core.Application.Mappings
                 .ForMember(x => x.FirstName, y => y.MapFrom(z => z.FirstName))
                 .ForMember(x => x.LastName, y => y.MapFrom(z => z.LastName))
                 .ForMember(x => x.Dni, y => y.MapFrom(z => z.Dni))
-                .ForMember(x => x.DeleteLog, y => y.MapFrom(z => z.DeleteLog))
+                .ForMember(x => x.UserName, y => y.MapFrom(z => z.UserName))
                 .ForMember(x => x.Email, y => y.MapFrom(z => z.Email))
                 .ForMember(x => x.ImgUrl, y => y.MapFrom(z => z.ImgUrl));
-
-
             #endregion
         }
     }
